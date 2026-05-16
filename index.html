@@ -65,21 +65,42 @@
             color: #000;
             border: none;
             padding: 15px 40px;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             cursor: pointer;
             border-radius: 30px;
             box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4);
             transition: all 0.2s ease;
+            width: 80%;
+            max-width: 300px;
         }
         .btn-main:hover {
             transform: scale(1.05);
             background-color: var(--dark-yellow);
         }
 
+        .btn-sub {
+            font-family: 'Orbitron', sans-serif;
+            background-color: transparent;
+            color: var(--primary-yellow);
+            border: 2px solid var(--primary-yellow);
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+            width: 80%;
+            max-width: 300px;
+            margin-top: 15px;
+        }
+        .btn-sub:hover {
+            background-color: rgba(241, 196, 15, 0.1);
+        }
+
         #welcome-screen h1 {
             font-size: 3rem;
-            margin-top: 20%;
+            margin-top: 15%;
         }
         #welcome-screen p {
             font-size: 1.1rem;
@@ -103,6 +124,26 @@
             justify-content: space-between;
             align-items: center;
             font-family: 'Orbitron', sans-serif;
+        }
+
+        .btn-close {
+            background: transparent;
+            border: 2px solid #ff4d4d;
+            color: #ff4d4d;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-close:hover {
+            background: #ff4d4d;
+            color: #000;
         }
         
         .timer-container {
@@ -144,11 +185,13 @@
         .option-card {
             background-color: var(--card-bg);
             border: 2px solid #333;
-            padding: 15px;
+            padding: 15px 10px;
             border-radius: 10px;
             font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.2s;
+            word-wrap: break-word;
         }
         .option-card.selected {
             border-color: var(--primary-yellow);
@@ -173,6 +216,14 @@
             justify-content: center;
             gap: 20px;
         }
+        
+        .ad-link {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
         .progress-bar-container {
             width: 80%;
             height: 10px;
@@ -186,6 +237,44 @@
             height: 100%;
             width: 0%;
             background-color: var(--primary-yellow);
+        }
+
+        #gallery-screen {
+            justify-content: center;
+            gap: 20px;
+        }
+        .slider-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        .slider-img {
+            width: 70%;
+            max-height: 350px;
+            border-radius: 15px;
+            border: 3px solid var(--primary-yellow);
+            object-fit: contain;
+            background-color: #111;
+            cursor: pointer;
+        }
+        .slider-arrow {
+            background: var(--primary-yellow);
+            color: #000;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .slider-arrow:hover {
+            background: var(--dark-yellow);
         }
 
         #result-screen {
@@ -229,13 +318,18 @@
 </head>
 <body>
 
-    <!-- SCREEN 1: WELCOME WINDOW -->
+    <!-- SCREEN 1: WELCOME SCREEN -->
     <div id="welcome-screen" class="screen active">
         <div>
             <h1 class="glow-text">IQ GRID</h1>
             <p style="margin-top: 15px;">Let's play and get your IQ level tested.</p>
         </div>
-        <button class="btn-main" onclick="startCountdown()">GO</button>
+        
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <button class="btn-main" onclick="startCountdown()">GO</button>
+            <button class="btn-sub" onclick="openGallery()">AI Learning (Ads)</button>
+        </div>
+
         <div class="glow-text" style="font-size: 0.8rem; margin-bottom: 20px;">Powered by Gen-AI Xperrari</div>
     </div>
 
@@ -249,6 +343,7 @@
             <div class="timer-container">
                 <div id="sand-clock" class="sand-fill"></div>
             </div>
+            <button class="btn-close" onclick="exitToHome()">X</button>
         </div>
 
         <div id="game-image" class="image-container"></div>
@@ -269,15 +364,34 @@
     <div id="ad-screen" class="screen">
         <div style="font-size: 0.8rem; text-transform: uppercase; color: #666; letter-spacing: 2px;">Sponsored Announcement</div>
         
-        <!-- Dynamic Rotating Image Target -->
-        <img id="ad-image-placeholder" src="webinar-ad1.png" alt="Webinar Ad" style="width: 90%; max-height: 250px; border-radius: 10px; object-fit: contain;">
+        <!-- Wrapped in an anchor tag configured for WhatsApp targeting -->
+        <a href="https://wa.me/94712220206?text=Give%20me%20more%20details%20about%20FREE%20AI%20Webinar" target="_blank" class="ad-link">
+            <img id="ad-image-placeholder" src="webinar-ad1.png" alt="Webinar Ad" style="width: 90%; max-height: 250px; border-radius: 10px; object-fit: contain;">
+        </a>
         
         <div class="progress-bar-container">
             <div id="ad-progress" class="progress-bar-fill"></div>
         </div>
     </div>
 
-    <!-- SCREEN 5: RESULTS SCREEN -->
+    <!-- SCREEN 5: AI LEARNING GALLERY -->
+    <div id="gallery-screen" class="screen">
+        <h2 class="glow-text" style="font-size: 1.8rem;">AI Learning Gallery</h2>
+        <div class="slider-container">
+            <button class="slider-arrow" onclick="slideAd(-1)">◀</button>
+            
+            <!-- Wrapped in an anchor tag configured for WhatsApp targeting -->
+            <a href="https://wa.me/94712220206?text=Give%20me%20more%20details%20about%20FREE%20AI%20Webinar" target="_blank" style="width:70%; display:contents;">
+                <img id="gallery-img-placeholder" src="webinar-ad1.png" alt="Gallery Ad" class="slider-img">
+            </a>
+            
+            <button class="slider-arrow" onclick="slideAd(1)">▶</button>
+        </div>
+        <button class="btn-sub" onclick="exitToHome()" style="margin-top: 10px;">Back to Home</button>
+        <div class="glow-text" style="font-size: 0.7rem;">Powered by Gen-AI Xperrari</div>
+    </div>
+
+    <!-- SCREEN 6: RESULTS SCREEN -->
     <div id="result-screen" class="screen">
         <div class="result-box" id="downloadable-card">
             <h2 class="glow-text" style="font-size: 1.8rem;">OFFICIAL RESULT</h2>
@@ -285,12 +399,11 @@
             <div class="iq-score">YOUR IQ Level: <span id="final-iq-score" style="color: var(--primary-yellow);">0</span>/100</div>
             <div class="glow-text" style="font-size: 0.75rem; color: #888;">Powered by GEN-AI Xperrari</div>
         </div>
-
         <button class="btn-download" onclick="downloadResultImage()">📥 Download Result Card</button>
+        <button class="btn-sub" onclick="exitToHome()">Play Again</button>
     </div>
 
     <script>
-        // --- GAME DATABASE (20 Levels) ---
         const gameData = [
             { img: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=500", opts: ["Quantum", "Ecology", "Fossil", "Acoustics"], correct: 0 }, 
             { img: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500", opts: ["Bio-Tech", "Automation", "Manual", "Analog"], correct: 1 }, 
@@ -319,15 +432,43 @@
         let selectedAnswerIdx = null;
         let timerInterval = null;
         let remainingSeconds = 10;
-        let adCounter = 1; // Tracks which image to load (1 to 4)
-        let isAdBreakActive = false; // Flag to prevent level skips
+        let adCounter = 1; 
+        let galleryCounter = 1; 
+        let isAdBreakActive = false; 
 
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }
 
-        // --- COUNTDOWN SYSTEM ---
+        function exitToHome() {
+            clearInterval(timerInterval); 
+            currentLevel = 0;
+            score = 0;
+            selectedAnswerIdx = null;
+            isAdBreakActive = false;
+            showScreen('welcome-screen');
+        }
+
+        function openGallery() {
+            galleryCounter = 1;
+            updateGalleryImage();
+            showScreen('gallery-screen');
+        }
+
+        // Handles dynamic adjustments to slide directions
+        function slideAd(direction) {
+            galleryCounter += direction;
+            if (galleryCounter > 4) galleryCounter = 1;
+            if (galleryCounter < 1) galleryCounter = 4;
+            updateGalleryImage();
+        }
+
+        function updateGalleryImage() {
+            const galleryImg = document.getElementById('gallery-img-placeholder');
+            galleryImg.src = `webinar-ad${galleryCounter}.png?t=${new Date().getTime()}`;
+        }
+
         function startCountdown() {
             showScreen('countdown-screen');
             let count = 3;
@@ -345,20 +486,18 @@
             }, 1000);
         }
 
-        // --- LOAD GAME BOARD LEVEL ---
         function loadGameLevel() {
             if (currentLevel >= 20) {
                 endGame();
                 return;
             }
 
-            // Trigger Ad Break exactly AFTER level 5, 10, 15 are fully processed
             if (currentLevel > 0 && currentLevel % 5 === 0 && !isAdBreakActive) {
                 triggerAdBreak();
                 return;
             }
 
-            isAdBreakActive = false; // Reset flag for normal play
+            isAdBreakActive = false; 
             showScreen('game-screen');
             selectedAnswerIdx = null;
             document.getElementById('current-level-txt').innerText = currentLevel + 1;
@@ -386,7 +525,6 @@
             }
         }
 
-        // --- TIMER (SAND CLOCK LOGIC) ---
         function startSandClock() {
             clearInterval(timerInterval);
             remainingSeconds = 10;
@@ -415,7 +553,6 @@
             }, 1200);
         }
 
-        // --- CONFIRM BUTTON EVALUATION ---
         function commitAnswer() {
             if (selectedAnswerIdx === null) return; 
             clearInterval(timerInterval);
@@ -438,37 +575,29 @@
             }, 1000);
         }
 
-        // --- ROTATING 5-SECOND SPONSORED AD BREAK ---
         function triggerAdBreak() {
             isAdBreakActive = true; 
             showScreen('ad-screen');
 
-            // Rotate through ads dynamically from webinar-ad1.png up to webinar-ad4.png
             const adImg = document.getElementById('ad-image-placeholder');
-            // Adding timestamp string prevents browser caching issues completely
             adImg.src = `webinar-ad${adCounter}.png?t=${new Date().getTime()}`;
 
-            // Increase counter for next break, reset if it passes 4
-            adCounter++;
-            if (adCounter > 4) adCounter = 1;
+            adCounter = (adCounter % 4) + 1;
 
-            // Reset and build JS layout timer animation manual steps
             const progressFill = document.getElementById('ad-progress');
-            progressFill.style.width = "0px";
             progressFill.style.transition = "none";
+            progressFill.style.width = "0%";
 
             setTimeout(() => {
                 progressFill.style.transition = "width 5s linear";
                 progressFill.style.width = "100%";
             }, 50);
 
-            // Hide the ad panel cleanly and continue after 5 seconds
             setTimeout(() => {
                 loadGameLevel(); 
             }, 5050);
         }
 
-        // --- ENDGAME ---
         function endGame() {
             showScreen('result-screen');
             document.getElementById('final-iq-score').innerText = score;
