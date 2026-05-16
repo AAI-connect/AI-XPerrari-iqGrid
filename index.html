@@ -35,7 +35,6 @@
             overflow: hidden;
         }
 
-        /* CRITICAL FIX: All screens hidden by default */
         .screen {
             display: none; 
             width: 100%;
@@ -49,12 +48,10 @@
             position: absolute;
         }
 
-        /* Force display only when active class is present */
         .screen.active { 
             display: flex !important; 
         }
 
-        /* Glowing Fonts style */
         .glow-text {
             font-family: 'Orbitron', sans-serif;
             color: var(--primary-yellow);
@@ -62,7 +59,6 @@
             letter-spacing: 2px;
         }
 
-        /* Large CTA Buttons */
         .btn-main {
             font-family: 'Orbitron', sans-serif;
             background-color: var(--primary-yellow);
@@ -81,7 +77,6 @@
             background-color: var(--dark-yellow);
         }
 
-        /* SCREEN 1: Welcome */
         #welcome-screen h1 {
             font-size: 3rem;
             margin-top: 20%;
@@ -91,7 +86,6 @@
             color: #888;
         }
 
-        /* SCREEN 2: Countdown */
         #countdown-screen {
             font-family: 'Orbitron', sans-serif;
             font-size: 6rem;
@@ -99,7 +93,6 @@
             color: var(--primary-yellow);
         }
 
-        /* SCREEN 3: Game Board */
         #game-screen {
             justify-content: flex-start;
             gap: 15px;
@@ -112,7 +105,6 @@
             font-family: 'Orbitron', sans-serif;
         }
         
-        /* Sand Clock Timer Design */
         .timer-container {
             width: 40px;
             height: 40px;
@@ -142,7 +134,6 @@
             transition: border-color 0.3s ease;
         }
 
-        /* 4 Option Buttons grid */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -175,7 +166,6 @@
         .feedback-correct { color: #2ecc71; opacity: 1; }
         .feedback-wrong { color: #e74c3c; opacity: 1; }
 
-        /* SCREEN 4: Ads Window */
         #ad-screen {
             background-color: #111;
             border: 4px dashed var(--primary-yellow);
@@ -190,15 +180,14 @@
             border-radius: 5px;
             overflow: hidden;
             margin-top: 20px;
+            position: relative;
         }
         .progress-bar-fill {
             height: 100%;
             width: 0%;
             background-color: var(--primary-yellow);
-            transition: width 5s linear;
         }
 
-        /* SCREEN 5: Results Window */
         #result-screen {
             justify-content: center;
             gap: 25px;
@@ -240,7 +229,7 @@
 </head>
 <body>
 
-    <!-- SCREEN 1: WELCOME WINDOW (Only this starts as active) -->
+    <!-- SCREEN 1: WELCOME WINDOW -->
     <div id="welcome-screen" class="screen active">
         <div>
             <h1 class="glow-text">IQ GRID</h1>
@@ -276,11 +265,12 @@
         <div class="glow-text" style="font-size: 0.7rem; margin-top: auto;">Powered by Gen-AI Xperrari</div>
     </div>
 
-    <!-- SCREEN 4: AD BREAK SCREEN (Swapped layout out with clean image placeholder) -->
+    <!-- SCREEN 4: AD BREAK SCREEN -->
     <div id="ad-screen" class="screen">
         <div style="font-size: 0.8rem; text-transform: uppercase; color: #666; letter-spacing: 2px;">Sponsored Announcement</div>
         
-        <img src="webinar-ad.png?v=1" alt="Webinar Ad" style="width: 90%; max-height: 250px; border-radius: 10px; object-fit: contain;">
+        <!-- Dynamic Rotating Image Target -->
+        <img id="ad-image-placeholder" src="webinar-ad1.png" alt="Webinar Ad" style="width: 90%; max-height: 250px; border-radius: 10px; object-fit: contain;">
         
         <div class="progress-bar-container">
             <div id="ad-progress" class="progress-bar-fill"></div>
@@ -300,7 +290,7 @@
     </div>
 
     <script>
-        // --- GAME DATABASE (20 Levels covering Science, Tech, Economy, Culture, Money, Astrology) ---
+        // --- GAME DATABASE (20 Levels) ---
         const gameData = [
             { img: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=500", opts: ["Quantum", "Ecology", "Fossil", "Acoustics"], correct: 0 }, 
             { img: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500", opts: ["Bio-Tech", "Automation", "Manual", "Analog"], correct: 1 }, 
@@ -329,8 +319,9 @@
         let selectedAnswerIdx = null;
         let timerInterval = null;
         let remainingSeconds = 10;
+        let adCounter = 1; // Tracks which image to load (1 to 4)
+        let isAdBreakActive = false; // Flag to prevent level skips
 
-        // Clean screen management
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
@@ -361,12 +352,13 @@
                 return;
             }
 
-            // Trigger Ad Break every 5 completed questions
-            if (currentLevel > 0 && currentLevel % 5 === 0) {
+            // Trigger Ad Break exactly AFTER level 5, 10, 15 are fully processed
+            if (currentLevel > 0 && currentLevel % 5 === 0 && !isAdBreakActive) {
                 triggerAdBreak();
                 return;
             }
 
+            isAdBreakActive = false; // Reset flag for normal play
             showScreen('game-screen');
             selectedAnswerIdx = null;
             document.getElementById('current-level-txt').innerText = currentLevel + 1;
@@ -446,23 +438,37 @@
             }, 1000);
         }
 
-        // --- AUTOMATED SPONSORED AD BREAK ---
+        // --- ROTATING 5-SECOND SPONSORED AD BREAK ---
         function triggerAdBreak() {
+            isAdBreakActive = true; 
             showScreen('ad-screen');
+
+            // Rotate through ads dynamically from webinar-ad1.png up to webinar-ad4.png
+            const adImg = document.getElementById('ad-image-placeholder');
+            // Adding timestamp string prevents browser caching issues completely
+            adImg.src = `webinar-ad${adCounter}.png?t=${new Date().getTime()}`;
+
+            // Increase counter for next break, reset if it passes 4
+            adCounter++;
+            if (adCounter > 4) adCounter = 1;
+
+            // Reset and build JS layout timer animation manual steps
             const progressFill = document.getElementById('ad-progress');
-            progressFill.style.width = "0%";
-            
+            progressFill.style.width = "0px";
+            progressFill.style.transition = "none";
+
             setTimeout(() => {
+                progressFill.style.transition = "width 5s linear";
                 progressFill.style.width = "100%";
             }, 50);
 
+            // Hide the ad panel cleanly and continue after 5 seconds
             setTimeout(() => {
-                showScreen('game-screen');
-                loadGameLevel();
+                loadGameLevel(); 
             }, 5050);
         }
 
-        // --- ENDGAME & DEVICE DOWNLOAD GENERATOR ---
+        // --- ENDGAME ---
         function endGame() {
             showScreen('result-screen');
             document.getElementById('final-iq-score').innerText = score;
